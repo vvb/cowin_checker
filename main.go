@@ -28,9 +28,9 @@ func main() {
 		for {
 			select {
 			case <- ticker.C:
+				fmt.Printf("%s", ".")
 				for _, pincode := range pincodes {
 					for _, daysFromToday := range daysOffset {
-						fmt.Printf("pincode: %s, DayOffset: %d\n", pincode, daysFromToday)
 						s, err := get_availability_status(pincode, time.Now().AddDate(0, 0, daysFromToday).Format("02-01-2006"))
 						if err != nil {
 							//fmt.Println("error:", err.Error())
@@ -54,7 +54,7 @@ func get_availability_status(pincode string, dateString string) (AvailabilitySta
 	s := AvailabilityStatus{}
 
 	url := "https://cdn-api.co-vin.in/api/v2/appointment/sessions/calendarByPin?pincode=" + pincode + "&date=" + dateString
-	fmt.Println(url)
+	//fmt.Println(url)
 	resp, err := http.Get(url)
 	if err != nil {
 		fmt.Println("error: ", err.Error())
@@ -70,7 +70,7 @@ func get_availability_status(pincode string, dateString string) (AvailabilitySta
 
 	err = json.Unmarshal(body, &s)
 	if err != nil {
-		fmt.Println("failed to unmarshal body:", string(body))
+		//fmt.Println("failed to unmarshal body:", string(body))
 		return s, err
 	}
 
@@ -82,7 +82,7 @@ func check_slots(s AvailabilityStatus, age int) {
 	for _, center := range s.Centers {
 		for _, session := range center.Sessions {
 			if session.MinAgeLimit == age && session.AvailableCapacity > 0 {
-				fmt.Println("Center:", center.Name, "Date:", session.Date, "Availability:", session.AvailableCapacity, "Vaccine:", session.Vaccine, "Slots:", session.Slots)
+				fmt.Println("Center:", center.Name, "Pincode:", center.Pincode, "Date:", session.Date, "Availability:", session.AvailableCapacity, "Vaccine:", session.Vaccine, "Slots:", session.Slots)
 				alert_me()
 			}
 		}
