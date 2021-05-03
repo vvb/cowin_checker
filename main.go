@@ -15,20 +15,22 @@ import (
 // Change - pincode and daysFromToday to experiment
 func main() {
 	// supports only pincode based search right now
-	pincode := "560076"
+	pincodes := []string{"560076", "560068"}
 
 	// 0  - today
 	// 1 - tomorrow and so on
 	daysOffset := []int{0, 1}
 
-	for _, daysFromToday := range daysOffset {
-		fmt.Printf("pincode: %s, DayOffset: %d\n", pincode, daysFromToday)
-		s, err := get_availability_status(pincode, time.Now().AddDate(0, 0, daysFromToday).Format("02-01-2006"))
-		if err != nil {
-			fmt.Println("error:", err.Error())
-			return
+	for _, pincode := range pincodes {
+		for _, daysFromToday := range daysOffset {
+			fmt.Printf("pincode: %s, DayOffset: %d\n", pincode, daysFromToday)
+			s, err := get_availability_status(pincode, time.Now().AddDate(0, 0, daysFromToday).Format("02-01-2006"))
+			if err != nil {
+				//fmt.Println("error:", err.Error())
+				continue
+			}
+			check_slots(s)
 		}
-		check_slots(s)
 	}
 }
 
