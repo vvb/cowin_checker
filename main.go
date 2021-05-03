@@ -14,8 +14,9 @@ import (
 
 // Change - pincode and daysFromToday to experiment
 func main() {
-	// supports only pincode based search right now
+	// configure pincodes and age
 	pincodes := []string{"560076", "560068"}
+	age := 18
 
 	// 0  - today
 	// 1 - tomorrow and so on
@@ -29,7 +30,7 @@ func main() {
 				//fmt.Println("error:", err.Error())
 				continue
 			}
-			check_slots(s)
+			check_slots(s, age)
 		}
 	}
 }
@@ -63,10 +64,10 @@ func get_availability_status(pincode string, dateString string) (AvailabilitySta
 }
 
 // check_slots - checks for the slots
-func check_slots(s AvailabilityStatus) {
+func check_slots(s AvailabilityStatus, age int) {
 	for _, center := range s.Centers {
 		for _, session := range center.Sessions {
-			if session.MinAgeLimit == 18 && session.AvailableCapacity > 0 {
+			if session.MinAgeLimit == age && session.AvailableCapacity > 0 {
 				fmt.Println("Center:", center.Name, "Date:", session.Date, "Availability:", session.AvailableCapacity, "Vaccine:", session.Vaccine, "Slots:", session.Slots)
 				alert_me()
 			}
