@@ -15,25 +15,39 @@ import (
 // Change - pincode and daysFromToday to experiment
 func main() {
 	// configure pincodes and age
-	pincodes := []string{"560076", "560068"}
+	pincodes := []string{"560076", "560068", "560034", "560083", "560103", "560071", "560078", "560029"}
 	age := 18
 
 	// 0  - today
 	// 1 - tomorrow and so on
 	daysOffset := []int{0, 1}
 
-	for _, pincode := range pincodes {
-		for _, daysFromToday := range daysOffset {
-			fmt.Printf("pincode: %s, DayOffset: %d\n", pincode, daysFromToday)
-			s, err := get_availability_status(pincode, time.Now().AddDate(0, 0, daysFromToday).Format("02-01-2006"))
-			if err != nil {
-				//fmt.Println("error:", err.Error())
-				continue
+	ticker := time.NewTicker(1 * time.Minute)
+	quit := make(chan struct{})
+	go func() {
+		for {
+			select {
+			case <- ticker.C:
+				for _, pincode := range pincodes {
+					for _, daysFromToday := range daysOffset {
+						fmt.Printf("pincode: %s, DayOffset: %d\n", pincode, daysFromToday)
+						s, err := get_availability_status(pincode, time.Now().AddDate(0, 0, daysFromToday).Format("02-01-2006"))
+						if err != nil {
+							//fmt.Println("error:", err.Error())
+							continue
+						}
+						check_slots(s, age)
+					}
+				}
+			case <- quit:
+				ticker.Stop()
+				return
 			}
-			check_slots(s, age)
 		}
-	}
+	}()
+	<- quit
 }
+
 
 // get_availability_status - Gets the availability status for the pincode and returns as a nice structure
 func get_availability_status(pincode string, dateString string) (AvailabilityStatus, error) {
