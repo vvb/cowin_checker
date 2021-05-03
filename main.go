@@ -22,7 +22,7 @@ func main() {
 	// 1 - tomorrow and so on
 	daysOffset := []int{0, 1}
 
-	ticker := time.NewTicker(1 * time.Minute)
+	ticker := time.NewTicker(10 * time.Second)
 	quit := make(chan struct{})
 	go func() {
 		for {
@@ -82,7 +82,7 @@ func check_slots(s AvailabilityStatus, age int) {
 	for _, center := range s.Centers {
 		for _, session := range center.Sessions {
 			if session.MinAgeLimit == age && session.AvailableCapacity > 0 {
-				fmt.Println("Center:", center.Name, "Pincode:", center.Pincode, "Date:", session.Date, "Availability:", session.AvailableCapacity, "Vaccine:", session.Vaccine, "Slots:", session.Slots)
+				fmt.Println(time.Now().Format("01-02-2006 15:04:05"),"Center:", center.Name, "Pincode:", center.Pincode, "Date:", session.Date, "Availability:", session.AvailableCapacity, "Vaccine:", session.Vaccine, "Slots:", session.Slots)
 				alert_me()
 			}
 		}
@@ -92,12 +92,6 @@ func check_slots(s AvailabilityStatus, age int) {
 // alert_me - plays something to alerty you.
 // configurable by changing the mp3 file :)
 func alert_me() error {
-	dir, err := os.Getwd()
-	if err != nil {
-		return err
-	}
-	fmt.Println(dir)
-
 	f, err := os.Open("cowin_checker/alert.mp3")
 	if err != nil {
 		return err
